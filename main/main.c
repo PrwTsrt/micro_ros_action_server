@@ -25,6 +25,8 @@
 #define RCCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){printf("Failed status on line %d: %d. Aborting.\n",__LINE__,(int)temp_rc);vTaskDelete(NULL);}}
 #define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){printf("Failed status on line %d: %d. Continuing.\n",__LINE__,(int)temp_rc);}}
 
+static const char *TAG = "MAIN";
+
 const char * goalResult[] =
 {[GOAL_STATE_SUCCEEDED] = "succeeded", [GOAL_STATE_CANCELED] = "canceled",
   [GOAL_STATE_ABORTED] = "aborted"};
@@ -90,9 +92,8 @@ rcl_ret_t handle_goal(rclc_action_goal_handle_t * goal_handle, void * context)
   (void) context;
 
   example_interfaces__action__Fibonacci_SendGoal_Request * req =
-    (example_interfaces__action__Fibonacci_SendGoal_Request *) goal_handle->ros_goal_request;
+    (example_interfaces__action__Fibonacci_SendGoal_Request *)  goal_handle->ros_goal_request;
 
-  // Too big, rejecting
   if (req->goal.order > 200) {
     printf("Goal %ld rejected\n", req->goal.order);
     return RCL_RET_ACTION_GOAL_REJECTED;
@@ -124,7 +125,7 @@ void micro_ros_task(void * arg)
 
 	// create node
 	rcl_node_t node;
-	RCCHECK(rclc_node_init_default(&node, "count_action_server", "", &support));
+	RCCHECK(rclc_node_init_default(&node, "fibonacci_action_server", "", &support));
 
 	// Create action service
 	rclc_action_server_t action_server;
@@ -146,7 +147,7 @@ void micro_ros_task(void * arg)
 	RCCHECK(
     	rclc_executor_add_action_server(
       		&executor,
-     		&action_server,
+     		  &action_server,
       		10,
       		ros_goal_request,
       		sizeof(example_interfaces__action__Fibonacci_SendGoal_Request),
@@ -164,7 +165,7 @@ void micro_ros_task(void * arg)
 	RCCHECK(rclc_action_server_fini(&action_server, &node));
 	RCCHECK(rcl_node_fini(&node));
 
-  	vTaskDelete(NULL);
+  vTaskDelete(NULL);
 }
 
 static size_t uart_port = UART_NUM_0;
