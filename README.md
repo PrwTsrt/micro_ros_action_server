@@ -34,3 +34,37 @@ Open a new terminal and execute the following command to call the action server.
 source /opt/ros/humble/setup.bash
 ros2 action send_goal /fibonacci example_interfaces/action/Fibonacci "{order: 10}"
 ```
+You will receive the following result:
+```
+Waiting for an action server to become available...
+Sending goal:
+     order: 10
+
+Goal accepted with ID: 5858233249f140ed812258268567f210
+
+Result:
+    sequence:
+- 0
+- 1
+- 1
+- 2
+- 3
+- 5
+- 8
+- 13
+- 21
+- 34
+
+Goal finished with status: SUCCEEDED
+```
+To view the action's topics, execute this command:
+```bash
+ros2 topic list --include-hidden-topics 
+```
+You will receive the following result:
+```
+/fibonacci/_action/feedback
+/fibonacci/_action/status
+/parameter_events
+/rosout
+```
